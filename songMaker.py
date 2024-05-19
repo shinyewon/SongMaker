@@ -5,7 +5,17 @@ import time
 from threading import Thread
 
 
-class SongMaker(tk.Tk):
+class Singleton(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(
+                Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+class SongMaker(tk.Tk, metaclass=Singleton):
     ROWS = 8
     COLS = 30
     row_colors = ["#FF0000", "#FFA500", "#FFFF00", "#008000",
@@ -27,11 +37,11 @@ class SongMaker(tk.Tk):
 
     def create_widgets(self):
         # Title
-        title_label = tk.Label(self, text="Compose melody",
+        title_label = tk.Label(self, text="멜로디 작성",
                                font=("Arial", 24, "bold"))
         title_label.pack(pady=10)
 
-        # Grid of buttons
+        # 버튼 그리드
         grid_frame = tk.Frame(self)
         grid_frame.pack()
 
@@ -42,25 +52,24 @@ class SongMaker(tk.Tk):
                 btn.grid(row=row, column=col)
                 self.buttons[row][col] = btn
 
-        # Play and Reset buttons
+        # 재생 및 리셋 버튼
         control_frame = tk.Frame(self)
         control_frame.pack(pady=10)
 
         play_button = tk.Button(
-            control_frame, text="Play", command=self.on_play_click)
+            control_frame, text="재생", command=self.on_play_click)
         play_button.pack(side="left", padx=5)
 
         reset_button = tk.Button(
-            control_frame, text="Reset", command=self.on_reset_click)
+            control_frame, text="리셋", command=self.on_reset_click)
         reset_button.pack(side="left", padx=5)
 
-        # Interval slider
+        # 간격 슬라이더
         self.interval_var = tk.IntVar(value=3)
         interval_slider = ttk.Scale(
             control_frame, from_=0, to=10, orient="horizontal", variable=self.interval_var)
         interval_slider.pack(side="left", padx=5)
-        interval_slider.bind("<Motion>", lambda e: print(
-            "Slider Value:", self.interval_var.get()))
+        interval_slider.bind("<ButtonRelease-1>", self.on_slider_release)
 
     def on_button_click(self, row, col):
         btn = self.buttons[row][col]
@@ -73,18 +82,18 @@ class SongMaker(tk.Tk):
         else:
             btn.config(bg="white")
 
-        print(f"Clicked on cell: ({row}, {col})")
+        print(f"셀 클릭: ({row}, {col})")
 
     def melody_find(self, row):
         file_paths = [
-            "C:/Users/LG/Downloads/do.wav",
-            "C:/Users/LG/Downloads/re.wav",
-            "C:/Users/LG/Downloads/mi.wav",
-            "C:/Users/LG/Downloads/fa.wav",
-            "C:/Users/LG/Downloads/sol.wav",
-            "C:/Users/LG/Downloads/la.wav",
-            "C:/Users/LG/Downloads/si.wav",
-            "C:/Users/LG/Downloads/do2.wav"
+            "./Sounds/do.wav",
+            "./Sounds/re.wav",
+            "./Sounds/mi.wav",
+            "./Sounds/fa.wav",
+            "./Sounds/sol.wav",
+            "./Sounds/la.wav",
+            "./Sounds/si.wav",
+            "./Sounds/do2.wav"
         ]
         return file_paths[row]
 
@@ -93,10 +102,10 @@ class SongMaker(tk.Tk):
             pygame.mixer.music.load(wav_file_path)
             pygame.mixer.music.play()
         except pygame.error as e:
-            print(f"Error playing {wav_file_path}: {e}")
+            print(f"{wav_file_path} 재생 오류: {e}")
 
     def on_play_click(self):
-        print("Play button clicked")
+        print("재생 버튼 클릭")
         Thread(target=self.play_sequence).start()
 
     def play_sequence(self):
@@ -140,7 +149,10 @@ class SongMaker(tk.Tk):
         for row in range(self.ROWS):
             for col in range(self.COLS):
                 self.buttons[row][col].config(bg="white")
-        print("Reset button clicked")
+        print("리셋 버튼 클릭")
+
+    def on_slider_release(self, event):
+        print("슬라이더 값:", self.interval_var.get())
 
 
 if __name__ == "__main__":
