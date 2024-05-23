@@ -14,6 +14,11 @@ class Singleton(type):
                 Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
 
+#Factory Pattern 적용 부분
+class ButtonFactory:
+    @staticmethod
+    def create_button(parent, row, col, command):
+        return tk.Button(parent, bg="white", width=2, height=1, command=command)
 
 class SongMaker(tk.Tk, metaclass=Singleton):
     ROWS = 8
@@ -47,8 +52,9 @@ class SongMaker(tk.Tk, metaclass=Singleton):
 
         for row in range(self.ROWS):
             for col in range(self.COLS):
-                btn = tk.Button(grid_frame, bg="white", width=2, height=1,
-                                command=lambda r=row, c=col: self.on_button_click(r, c))
+                #Factory Pattern 적용 부분
+                btn = ButtonFactory.create_button(
+                    grid_frame, row, col, lambda r=row, c=col: self.on_button_click(r, c))
                 btn.grid(row=row, column=col)
                 self.buttons[row][col] = btn
 
