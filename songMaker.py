@@ -125,14 +125,14 @@ class SongMaker(tk.Tk, metaclass=Singleton):
 
     def melody_find(self, row):
         file_paths = [
-            "/Users/hyeon/Downloads/do.wav",
-            "/Users/hyeon/Downloads/re.wav",
-            "/Users/hyeon/Downloads/mi.wav",
-            "/Users/hyeon/Downloads/fa.wav",
-            "/Users/hyeon/Downloads/sol.wav",
-            "/Users/hyeon/Downloads/la.wav",
-            "/Users/hyeon/Downloads/si.wav",
-            "/Users/hyeon/Downloads/do2.wav"
+            "./Sounds/do.wav",
+            "./Sounds/re.wav",
+            "./Sounds/mi.wav",
+            "./Sounds/fa.wav",
+            "./Sounds/sol.wav",
+            "./Sounds/la.wav",
+            "./Sounds/si.wav",
+            "./Sounds/do2.wav"
         ]
         return file_paths[row]
 
